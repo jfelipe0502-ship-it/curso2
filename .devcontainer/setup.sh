@@ -16,6 +16,15 @@ if ! php -m | grep -qi pdo_sqlite; then
         || sudo apt-get install -y -qq php-sqlite3 >/dev/null 2>&1
 fi
 
+# pcntl: lo exige "php artisan pail" (los logs de composer run dev)
+if ! php -m | grep -qi pcntl; then
+    sudo docker-php-ext-install pcntl >/dev/null 2>&1 || true
+    INI_SCAN_DIR=$(php --ini | grep 'Scan for additional' | awk -F': ' '{print $2}' | tr -d ' ')
+    if [ -n "$INI_SCAN_DIR" ] && ! php -m | grep -qi pcntl; then
+        echo 'extension=pcntl' | sudo tee "$INI_SCAN_DIR/docker-php-ext-pcntl.ini" >/dev/null
+    fi
+fi
+
 # OPcache para que el entorno se sienta rápido en desarrollo
 PHP_INI_DIR=$(php -i | grep 'Scan this dir' | awk -F'=> ' '{print $2}' | tr -d ' ')
 if [ -n "$PHP_INI_DIR" ] && [ ! -f "$PHP_INI_DIR/opcache-dev.ini" ]; then
@@ -43,9 +52,8 @@ if [ "$FALLOS" -gt 0 ]; then
     echo "Hay $FALLOS herramienta(s) con problema. Avisa en el canal del curso con una captura."
 elif [ -f artisan ]; then
     echo "Proyecto Laravel detectado. Siguientes pasos:"
-    echo "  composer install   (si vendor/ está vacío)"
-    echo "  php artisan serve --host=0.0.0.0"
-    echo "  npm install && npm run dev   (en otra terminal)"
+    echo "  composer install && npm install   (si vendor/ está vacío)"
+    echo "  composer run dev                  (levanta Laravel y Vite juntos)"
 else
     echo "Todo listo. El proyecto se crea en clase con:"
     echo "  bash .devcontainer/crear-proyecto.sh"

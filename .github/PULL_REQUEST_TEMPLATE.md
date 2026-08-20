@@ -12,7 +12,7 @@ Trabajé sobre: `main` al día + lo indicado en la tarea de la sesión.
 <!-- Copia aquí el checklist que viene en la tarea de la sesión (tarea-async.md)
      y marca lo que cumples. Ejemplo de la sesión 1: -->
 
-- [ ] `npm run dev` funciona y el layout público usa @vite
+- [ ] `composer run dev` funciona y el layout público usa @vite
 - [ ] Portada responsive con `<x-tarjeta-post>` (componente, sin clases repetidas)
 - [ ] Formulario de contacto con estados focus
 - [ ] @theme con color de marca aplicado
