@@ -8,29 +8,37 @@ El formulario del Ejercicio 1 es decorativo y la portada solo lee. Aquí el blog
 
 ## Parte 0 · Nace el controlador y la portada se muda (10 min)
 
-1. Genera el controlador:
+1. Genera el controlador **con todo el esqueleto del CRUD ya puesto**:
    ```bash
-   php artisan make:controller PostController
+   php artisan make:controller PostController --resource --model=Post
    ```
+   Ábrelo: no está vacío. Trae los **siete métodos** que forman el mapa estándar de un CRUD en Laravel, y ese mapa es el mismo en cualquier proyecto del mundo:
 
-2. La portada deja el closure y se vuelve el método `index`. En `app/Http/Controllers/PostController.php`:
+   | Método | Para qué sirve | ¿Lo llenamos hoy? |
+   |---|---|---|
+   | `index` | la lista (tu portada) | sí |
+   | `create` | mostrar el formulario de alta | sí |
+   | `store` | guardar lo que llegó del formulario | sí |
+   | `show` | la página de UN aviso | no, se queda vacío |
+   | `edit` | mostrar el formulario de edición | sí |
+   | `update` | guardar los cambios | sí |
+   | `destroy` | borrar | sí |
+
+   Las dos banderas importan: `--resource` crea los siete métodos, y `--model=Post` hace que los que trabajan sobre un aviso ya reciban el modelo listo (`edit(Post $post)`). Eso es **route model binding**: Laravel recibe el id de la URL, busca el aviso y te lo entrega, o responde 404 si no existe. Nunca escribes `Post::find($id)`.
+
+   > Tu trabajo de aquí en adelante es **llenar cuerpos**, no escribir firmas.
+
+2. La portada deja el closure y se muda al método `index`, que ya existe. Complétalo (y agrega los `use` de arriba si no están):
    ```php
-   <?php
-
-   namespace App\Http\Controllers;
-
    use App\Models\Categoria;
    use App\Models\Post;
    use Illuminate\Http\Request;
 
-   class PostController extends Controller
+   public function index()
    {
-       public function index()
-       {
-           $posts = Post::publicados()->with('categoria')->latest()->get();
+       $posts = Post::publicados()->with('categoria')->latest()->get();
 
-           return view('portada', ['posts' => $posts]);
-       }
+       return view('portada', ['posts' => $posts]);
    }
    ```
 
@@ -53,7 +61,7 @@ El formulario del Ejercicio 1 es decorativo y la portada solo lee. Aquí el blog
    Route::post('/avisos', [PostController::class, 'store'])->name('avisos.store');
    ```
 
-5. Los métodos en el controlador:
+5. Llena los dos métodos, que ya existen en el archivo:
    ```php
    public function create()
    {
@@ -133,7 +141,7 @@ El formulario del Ejercicio 1 es decorativo y la portada solo lee. Aquí el blog
    Route::put('/avisos/{post}', [PostController::class, 'update'])->name('avisos.update');
    ```
 
-9. Los métodos:
+9. Llena los dos métodos (fíjate que `edit` y `update` ya reciben el `Post $post` gracias a `--model`):
    ```php
    public function edit(Post $post)
    {
@@ -171,7 +179,7 @@ El formulario del Ejercicio 1 es decorativo y la portada solo lee. Aquí el blog
 
 ## Parte C · Borrar avisos: destroy (10 min)
 
-12. La ruta y el método:
+12. La ruta y el método `destroy`, que también viene listo para recibir el aviso:
     ```php
     Route::delete('/avisos/{post}', [PostController::class, 'destroy'])->name('avisos.destroy');
     ```
@@ -207,6 +215,7 @@ El formulario del Ejercicio 1 es decorativo y la portada solo lee. Aquí el blog
 | Síntoma | Causa probable |
 |---|---|
 | `Target class [PostController] does not exist` | Falta `use App\Http\Controllers\PostController;` arriba de `routes/web.php` |
+| El controlador salió vacío, sin métodos | Te faltaron las banderas: `--resource --model=Post` |
 | `419 Page Expired` al enviar | Falta `@csrf` dentro del `<form>` |
 | `MethodNotAllowedHttpException` al guardar la edición | Falta `@method('PUT')` en el form de editar (o `@method('DELETE')` en el de borrar) |
 | `Add [titulo] to fillable property` | El `$fillable` del modelo `Post` no incluye ese campo (Ejercicio 2, paso 3) |
