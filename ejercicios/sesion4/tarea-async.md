@@ -8,7 +8,7 @@
 - **Nivel 2 (obligatorio):** el `SelectFilter` por categoría y la acción **Publicar** con confirmación, visible solo en los avisos que son borrador.
 - **Nivel 3 (opcional, cuenta como extra):** un widget en el dashboard con el total de avisos y cuántos son borradores; o, si tu blog tiene etiquetas, un `CheckboxList` por relación en el formulario.
 
-La guía está en tu proyecto: `ejercicios/sesion4/01-filament-resource.md`.
+La guía está en tu proyecto: `ejercicios/sesion4/01-filament-resource.md`. Y todo lo conceptual de la clase (reactividad, Livewire, Filament por dentro) está por escrito en `ejercicios/sesion4/00-livewire-y-filament-por-dentro.md`, por si quieres releerlo antes de hacer el ejercicio.
 
 ## 2. Quién entra al panel (~15 min)
 
@@ -21,6 +21,59 @@ Si tu blog público todavía no tiene login propio o la Policy completa (`update
 ## 4. Una pregunta para traer respondida (~10 min)
 
 En tu blog público, quita el `@can` de la tarjeta de aviso y entra como editor. El botón **Editar** ahora aparece también en avisos ajenos. Da clic en uno. Escribe en tu PR, en tres líneas: qué respondió la aplicación, **cuál capa** lo detuvo, y por qué el panel de Filament no necesitó ese `@can` para esconder el mismo botón.
+
+## 5. Nivel extra (opcional, cuenta como extra): tu primer componente Livewire (~30 min)
+
+Todo lo que viste de Livewire en clase lo hace Filament por ti. Aquí lo escribes tú, en tu **blog público**: el buscador de avisos de la sesión.
+
+```bash
+php artisan make:livewire BuscadorAvisos --class
+```
+
+> El `--class` importa: sin él, Livewire 4 crea un componente de **un solo archivo** (`resources/views/components/⚡buscador-avisos.blade.php`, clase y vista juntas). Con `--class` crea las dos piezas separadas, que es la forma de esta lectura y la que usa Filament por dentro.
+
+`app/Livewire/BuscadorAvisos.php`:
+
+```php
+namespace App\Livewire;
+
+use App\Models\Post;
+use Livewire\Component;
+
+class BuscadorAvisos extends Component
+{
+    public string $busqueda = '';
+
+    public function render()
+    {
+        return view('livewire.buscador-avisos', [
+            'avisos' => Post::publicados()
+                ->where('titulo', 'like', "%{$this->busqueda}%")
+                ->latest()
+                ->get(),
+        ]);
+    }
+}
+```
+
+`resources/views/livewire/buscador-avisos.blade.php` (un solo elemento raíz):
+
+```blade
+<div>
+    <input type="text" wire:model.live.debounce.300ms="busqueda" placeholder="Buscar aviso"
+           class="w-full rounded-lg border border-gray-300 px-4 py-2">
+    <p wire:loading class="text-sm text-gray-500 mt-2">Buscando...</p>
+    <div class="grid gap-4 mt-4 md:grid-cols-2">
+        @foreach ($avisos as $aviso)
+            <x-tarjeta-post :post="$aviso" wire:key="{{ $aviso->id }}" />
+        @endforeach
+    </div>
+</div>
+```
+
+En tu portada, donde estaba el `@foreach`, deja `<livewire:buscador-avisos />`. Livewire ya viene instalado con Filament y sus scripts se inyectan solos.
+
+Prueba: escribe en la caja con la pestaña Red abierta. Cada cambio es un `POST /livewire/update` y la respuesta trae HTML. El `wire:key` es lo que le permite a Livewire saber qué tarjeta es cuál al reordenar.
 
 ## Checklist del Pull Request
 
@@ -35,6 +88,7 @@ Copia esto en la descripción de tu PR y marca lo que cumples:
 - [ ] canAccessPanel() en User: solo admin y editor entran al panel
 - [ ] Respondida la pregunta del @can
 - [ ] Extra: widget o CheckboxList de etiquetas (nivel 3)
+- [ ] Extra: buscador Livewire en la portada pública (nivel extra)
 ```
 
 ## Recordatorio del flujo

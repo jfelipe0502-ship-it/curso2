@@ -37,6 +37,27 @@ app/Filament/Resources/Posts/
 
 Recarga `/admin`: apareció **Posts** en el menú. Crea un aviso, edítalo y bórralo. Luego abre tu portada: el aviso está ahí, porque es la misma tabla y el mismo modelo.
 
+## Parte 1.5 · Que el panel hable español (5 min)
+
+Dos capas de idioma. La interfaz de Filament (botones, búsqueda, paginación) sale del idioma de la aplicación; los nombres de **tus** cosas los declaras tú.
+
+1. En `.env`, cambia `APP_LOCALE=en` por `APP_LOCALE=es` y recarga. Filament ya incluye la traducción: "Create" pasa a "Crear", "Search" a "Buscar".
+2. En `PostResource.php`, el menú deja de decir "Posts":
+   ```php
+   use Filament\Support\Icons\Heroicon;
+
+   protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
+   protected static ?int $navigationSort = 10;
+
+   public static function getNavigationGroup(): string { return 'Contenido'; }
+   public static function getNavigationLabel(): string { return 'Avisos'; }
+   public static function getModelLabel(): string       { return 'Aviso'; }
+   public static function getPluralModelLabel(): string { return 'Avisos'; }
+   ```
+3. En cada campo y columna, `->label('Título')`, `->label('Contenido')`, `->label('Categoría')`. Sin eso, Filament deduce "Titulo" del nombre de la columna, sin acento.
+
+> Los mensajes de validación de Laravel ("The titulo field is required") siguen en inglés hasta que agregues las traducciones de Laravel (paquete `laravel-lang/common`). No es de hoy.
+
 ## Parte 2 · Ajustar el formulario (en clase, 5 min)
 
 Abre `Schemas/PostForm.php`. Lo generado trae `categoria_id` como número y `user_id` como campo, porque Filament vio dos enteros en la tabla, no dos relaciones. Déjalo así:
@@ -180,20 +201,48 @@ Prueba: crea un borrador (publicado apagado) y publícalo desde su fila. El bot�
 php artisan make:filament-widget AvisosStats --stats-overview
 ```
 
-En `app/Filament/Widgets/AvisosStats.php`:
+Crea `app/Filament/Widgets/AvisosStats.php`, que el panel registra solo (`discoverWidgets`) y pinta en el dashboard:
 
 ```php
-protected function getStats(): array
+use App\Models\Post;
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+
+class AvisosStats extends StatsOverviewWidget
 {
-    return [
-        Stat::make('Avisos', Post::count()),
-        Stat::make('Borradores', Post::where('publicado', false)->count()),
-    ];
+    protected function getStats(): array
+    {
+        return [
+            Stat::make('Avisos', Post::count())
+                ->description(Post::publicados()->count() . ' publicados')
+                ->color('success'),
+            Stat::make('Borradores', Post::where('publicado', false)->count())
+                ->description('pendientes de revisar')
+                ->color('warning'),
+        ];
+    }
 }
 ```
+
+Un widget es un componente Livewire; `--stats-overview` da la variante de tarjetas con número (hay otras para gráficas y tablas). Fíjate en `Post::publicados()`: tu scope de la sesión 2, usado desde el panel.
 
 **Opción B, si tu blog tiene etiquetas:** en el formulario, `CheckboxList::make('etiquetas')->relationship('etiquetas', 'nombre')`. Filament hace el `sync()` por ti al guardar.
 
 ## Momento de leer código real
 
 Un Resource de producción se ve exactamente como el tuyo: la misma clase `Resource` con `form()` y `table()` delegando en `Schemas/` y `Tables/`, las mismas columnas con `searchable()` y `sortable()`, el mismo `TernaryFilter`, las mismas `EditAction` y `DeleteAction`. Los sistemas grandes tienen decenas de estos; cada uno se lee igual que el que acabas de escribir.
+
+## Si algo falla
+
+| Lo que ves | Qué es | Qué hacer |
+|---|---|---|
+| `composer require` termina con "requires ext-intl" o "ext-zip" | El contenedor no trae esas extensiones de PHP | `bash .devcontainer/preparar-filament.sh` (un minuto) y repite el `require` |
+| `composer require` lleva más de 5 minutos | Es la descarga: depende de la red | Déjalo correr; no lo canceles a medias (si lo cancelas, vuelve a lanzarlo, retoma) |
+| `make:filament-resource` se detiene con "What is the title attribute for this model?" | Pregunta cuál columna nombra a cada registro | Escribe `titulo` y Enter |
+| El menú dice "Posts" y los botones están en inglés | Faltan `APP_LOCALE=es` y las etiquetas del Resource | Parte 1.5 de esta guía |
+| Creaste un aviso desde el panel y no te aparece el botón Editar en él | Nació sin dueño (`user_id` vacío) y la Policy compara con el dueño | El `mutateFormDataBeforeCreate` de la Parte 2; con Tinker, `Post::whereNull('user_id')->update(['user_id' => 1])` para los que ya existen |
+| El campo nuevo se ve en el formulario pero no se guarda | No está en el `$fillable` del modelo | Agrégalo a `$fillable` en `app/Models/Post.php` |
+| Cambiaste el Resource y `/admin` no refleja el cambio | Caché de configuración o de vistas | `php artisan optimize:clear` y recarga |
+| "Class ... not found" después de renombrar o mover una clase | El autoload de Composer no la conoce | `composer dump-autoload` |
+| `/admin` carga sin estilos | Casi siempre un caché del navegador tras la instalación | Recarga forzada (Ctrl+Shift+R). Filament no usa tu Vite: no hace falta `npm run dev` para el panel |
+| Al abrir `/admin` en Codespaces te manda a `localhost` | Falta el arreglo de URLs del `AppServiceProvider` | El pull del curso lo trae; si no lo tienes, `git merge upstream/main -X theirs` |

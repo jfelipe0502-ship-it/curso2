@@ -17,14 +17,28 @@ fi
 
 echo "Instalando extensiones de PHP:${faltan} (alrededor de un minuto)..."
 export DEBIAN_FRONTEND=noninteractive
-sudo apt-get update -qq >/dev/null 2>&1 || true
-sudo apt-get install -y -qq libicu-dev libzip-dev >/dev/null 2>&1
+LOG=/tmp/preparar-filament.log
+: > "$LOG"
+sudo apt-get update -qq >>"$LOG" 2>&1 || true
+if ! sudo apt-get install -y -qq libicu-dev libzip-dev >>"$LOG" 2>&1; then
+    echo "  AVISO: apt-get no pudo instalar libicu-dev/libzip-dev. Ultimas lineas:"
+    tail -5 "$LOG"
+fi
 
 # docker-php-ext-install compila el modulo, pero su activacion automatica
 # falla bajo sudo (no ve PHP_INI_DIR y busca /conf.d). El .ini se escribe a mano.
 INI_SCAN_DIR=$(php --ini | grep 'Scan for additional' | awk -F': ' '{print $2}' | tr -d ' ')
+EXT_DIR=$(php -r 'echo ini_get("extension_dir");')
 for ext in $faltan; do
-    sudo docker-php-ext-install "$ext" >/dev/null 2>&1 || true
+    echo "  compilando $ext..."
+    if ! sudo docker-php-ext-install "$ext" >>"$LOG" 2>&1; then
+        # docker-php-ext-enable falla bajo sudo aunque el .so ya exista: se revisa el .so
+        if [ ! -f "$EXT_DIR/$ext.so" ]; then
+            echo "  AVISO: no se pudo compilar $ext. Ultimas lineas de $LOG:"
+            tail -8 "$LOG"
+            continue
+        fi
+    fi
     if [ -n "$INI_SCAN_DIR" ]; then
         echo "extension=$ext" | sudo tee "$INI_SCAN_DIR/docker-php-ext-$ext.ini" >/dev/null
     fi
@@ -39,4 +53,4 @@ for ext in intl zip; do
         ok=0
     fi
 done
-[ "$ok" = 1 ] || { echo "Avisa en el canal del curso con una captura de este mensaje."; exit 1; }
+[ "$ok" = 1 ] || { echo "El detalle completo esta en $LOG. Avisa en el canal del curso con una captura de este mensaje."; exit 1; }
