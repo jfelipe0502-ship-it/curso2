@@ -35,8 +35,36 @@ class UserSeeder extends Seeder
         }
         $editor->save();
 
-        // Si los avisos ya tienen dueno (columna user_id del ejercicio 2),
-        // los que vengan sin dueno quedan a nombre del admin.
+        User::updateOrCreate(
+            ['email' => 'admin@avisos.test'],
+            [
+                'name' => 'Administrador',
+                'password' => Hash::make('password'),
+                'rol' => 'admin',
+                'email_verified_at' => now(),
+            ],
+        );
+
+        User::updateOrCreate(
+            ['email' => 'usuario@avisos.test'],
+            [
+                'name' => 'Usuario',
+                'password' => Hash::make('password'),
+                'rol' => 'lector',
+                'email_verified_at' => now(),
+            ],
+        );
+
+        User::updateOrCreate(
+            ['email' => 'jfelipe0502@gmail.com'],
+            [
+                'name' => 'Jesus Felipe Ronquillo Garcia',
+                'password' => Hash::make('password'),
+                'rol' => 'admin',
+                'email_verified_at' => now(),
+            ],
+        );
+
         if (Schema::hasTable('posts') && Schema::hasColumn('posts', 'user_id') && class_exists(\App\Models\Post::class)) {
             \App\Models\Post::whereNull('user_id')->update(['user_id' => $admin->id]);
         }
