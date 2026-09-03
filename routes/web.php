@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/', [PostController::class, 'index'])->name('avisos.index');
+Route::get('/', [PostController::class, 'index'])->name('portada');
+Route::get('/avisos', [PostController::class, 'index'])->name('avisos.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/avisos/crear', [PostController::class, 'create'])->name('avisos.create');

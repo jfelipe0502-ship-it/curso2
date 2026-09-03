@@ -31,7 +31,7 @@ class AuthController extends Controller
         Auth::login($usuario);
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        return redirect()->intended(route('avisos.index'));
     }
 
     public function entrar(Request $request)
@@ -44,7 +44,7 @@ class AuthController extends Controller
         if (Auth::attempt($datos)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            return redirect()->intended(route('avisos.index'));
         }
 
         return back()
