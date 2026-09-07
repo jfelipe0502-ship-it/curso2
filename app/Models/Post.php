@@ -13,10 +13,11 @@ class Post extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['titulo', 'contenido', 'categoria_id', 'publicado', 'user_id'];
+    protected $fillable = ['titulo', 'slug', 'resumen', 'contenido', 'categoria_id', 'publicado', 'publicado_en', 'user_id'];
 
     protected $casts = [
         'publicado' => 'boolean',
+        'publicado_en' => 'datetime',
     ];
 
     protected function resumen(): Attribute

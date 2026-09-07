@@ -11,6 +11,7 @@
             Nuevo aviso
         </a>
     </div>
+    <livewire:buscador-avisos />
 
     @if (session('ok'))
         <p class="max-w-4xl mx-auto mt-4 bg-green-100 text-green-800 rounded-lg px-4 py-2">{{ session('ok') }}</p>
@@ -22,5 +23,6 @@
                 <x-tarjeta-post :post="$post" />
             @endforeach
         </div>
+        {{ $posts->links() }}
     </div>
 @endsection

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Posts\Pages;
+namespace App\Filament\Admin\Resources\Posts\Pages;
 
-use App\Filament\Resources\Posts\PostResource;
+use App\Filament\Admin\Resources\Posts\PostResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 

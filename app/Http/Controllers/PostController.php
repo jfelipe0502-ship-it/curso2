@@ -13,9 +13,14 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::publicados()->with('categoria')->latest()->get();
+        $posts = Post::publicados()
+            ->with('categoria')
+            ->when($request->q, fn ($q, $texto) => $q->where('titulo', 'like', "%{$texto}%"))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('portada', ['posts' => $posts]);
     }

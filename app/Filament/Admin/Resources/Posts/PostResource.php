@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Posts;
+namespace App\Filament\Admin\Resources\Posts;
 
-use App\Filament\Resources\Posts\Pages\CreatePost;
-use App\Filament\Resources\Posts\Pages\EditPost;
-use App\Filament\Resources\Posts\Pages\ListPosts;
-use App\Filament\Resources\Posts\Pages\ViewPost;
-use App\Filament\Resources\Posts\Schemas\PostForm;
-use App\Filament\Resources\Posts\Schemas\PostInfolist;
-use App\Filament\Resources\Posts\Tables\PostsTable;
+use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
+use App\Filament\Admin\Resources\Posts\Pages\EditPost;
+use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
+use App\Filament\Admin\Resources\Posts\Pages\ViewPost;
+use App\Filament\Admin\Resources\Posts\Schemas\PostForm;
+use App\Filament\Admin\Resources\Posts\Schemas\PostInfolist;
+use App\Filament\Admin\Resources\Posts\Tables\PostsTable;
 use App\Models\Post;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -22,31 +22,9 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
-
-    protected static ?int $navigationSort = 10;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'titulo';
-
-    public static function getNavigationGroup(): string
-    {
-        return 'Contenido';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Avisos';
-    }
-
-    public static function getModelLabel(): string
-    {
-        return 'Aviso';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Avisos';
-    }
 
     public static function form(Schema $schema): Schema
     {

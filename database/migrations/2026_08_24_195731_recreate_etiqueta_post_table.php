@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('etiqueta_post')) {
+            return;
+        }
+
         Schema::create('etiqueta_post', function (Blueprint $table) {
             $table->id();
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('etiqueta_post');
+        // The table is owned by the preceding create migration.
     }
 };

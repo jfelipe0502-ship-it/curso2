@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Posts\Tables;
+namespace App\Filament\Admin\Resources\Posts\Tables;
 
 use App\Models\Post;
 use Filament\Actions\Action;
