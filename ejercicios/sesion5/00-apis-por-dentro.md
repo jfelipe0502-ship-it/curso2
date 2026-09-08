@@ -265,7 +265,23 @@ Eso significa que una regla escrita una vez gobierna tres lugares que no se cono
 
 Es la razón por la que la autorización se pone en el modelo de permisos y no en la pantalla: **las pantallas cambian, la regla no**.
 
-## 14. Tres agujeros propios de una API
+## 14. El viaje completo de una petición, caso por caso
+
+Junta todo lo anterior. Una petición a tu API recorre ocho piezas, siempre en el mismo orden, y lo interesante es **dónde se detiene cada caso**:
+
+`quien llama` → `routes/api.php` → `auth:sanctum` → `PostController` → `Gate` y tu `PostPolicy` → `Eloquent` → `PostResource` → `respuesta`
+
+**Caso 1: `GET /api/avisos`.** Se salta el guardia y la Policy, porque leer avisos publicados no pide token ni dueño. Eloquent consulta, el Resource recorta y sale JSON. Termina en **200**.
+
+**Caso 2: `POST /api/avisos` sin token.** Se detiene en `auth:sanctum`. Tu controlador nunca se ejecutó, tu validación nunca corrió y la base de datos ni se enteró. Termina en **401**.
+
+**Caso 3: `POST /api/avisos` con token.** El recorrido completo: el token identifica, la validación aprueba, la Policy permite crear, Eloquent guarda y el Resource arma la respuesta. Termina en **201**.
+
+**Caso 4: `PUT /api/avisos/1` sobre un aviso ajeno, con token válido.** Pasa el guardia (sí sabe quién eres) y pasa el controlador, y **se detiene en tu Policy**. Termina en **403**.
+
+Ese cuarto caso merece una segunda lectura: **la respuesta salió sin tocar la base de datos**. La autorización no es un filtro sobre el resultado, es una decisión que ocurre antes de consultar. Por eso da lo mismo que quien llama sea una app, un frontend o `curl`: la regla está del lado del servidor, y del lado del servidor está escrita una sola vez.
+
+## 15. Tres agujeros propios de una API
 
 Una API es la puerta más expuesta de un sistema: no tiene pantalla que disimule y quien la llama no respeta tus reglas por cortesía.
 
@@ -281,7 +297,7 @@ Route::post('/token', [TokenController::class, 'crear'])->middleware('throttle:6
 
 Seis por minuto por dirección; al pasarse responde `429`.
 
-## 15. Por qué el navegador no puede llamar a cualquier API
+## 16. Por qué el navegador no puede llamar a cualquier API
 
 Si abres una página y esa página llama por JavaScript a un servidor distinto, el navegador lo bloquea salvo que el servidor de destino diga expresamente que lo permite. Se llama **política del mismo origen**, y existe para que una página cualquiera no pueda leer, con tus cookies, la información de tu banco.
 
