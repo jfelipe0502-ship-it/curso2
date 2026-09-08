@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -14,17 +15,20 @@ class PostForm
         return $schema
             ->components([
                 TextInput::make('titulo')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('resumen')
+                    ->maxLength(160)
+                    ->columnSpanFull(),
+                Select::make('categoria_id')
+                    ->label('Categoría')
+                    ->relationship('categoria', 'nombre')
                     ->required(),
                 Textarea::make('contenido')
                     ->required()
                     ->columnSpanFull(),
-                TextInput::make('categoria_id')
-                    ->required()
-                    ->numeric(),
                 Toggle::make('publicado')
-                    ->required(),
-                TextInput::make('user_id')
-                    ->numeric(),
+                    ->default(true),
             ]);
     }
 }

@@ -22,9 +22,31 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMegaphone;
+
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $recordTitleAttribute = 'titulo';
+
+    public static function getNavigationGroup(): string
+    {
+        return 'Contenido';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Avisos';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Aviso';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Avisos';
+    }
 
     public static function form(Schema $schema): Schema
     {

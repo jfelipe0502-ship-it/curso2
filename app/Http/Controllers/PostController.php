@@ -13,9 +13,14 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::publicados()->with('categoria')->latest()->get();
+        $posts = Post::publicados()
+            ->with('categoria')
+            ->when($request->q, fn ($query, $texto) => $query->where('titulo', 'like', "%{$texto}%"))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('portada', ['posts' => $posts]);
     }
@@ -35,6 +40,7 @@ public function store(Request $request)
     $datos = $request->validate([
         'titulo' => ['required', 'max:120'],
         'contenido' => ['required'],
+        'resumen' => ['nullable', 'max:160'],
         'categoria_id' => ['required', 'exists:categorias,id'],
     ]);
 

@@ -25,9 +25,10 @@ class AdminadminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('adminadmin')
-            ->path('adminadmin')
+            ->id('admin')
+            ->path('admin')
             ->login()
+            ->brandName('Blog de avisos')
             ->colors([
                 'primary' => Color::Amber,
             ])

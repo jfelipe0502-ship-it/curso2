@@ -13,15 +13,18 @@ class Post extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['titulo', 'contenido', 'categoria_id', 'publicado', 'user_id'];
+    protected $fillable = ['titulo', 'slug', 'resumen', 'contenido', 'categoria_id', 'publicado', 'publicado_en', 'user_id'];
 
     protected $casts = [
         'publicado' => 'boolean',
+        'publicado_en' => 'datetime',
     ];
 
     protected function resumen(): Attribute
     {
-        return Attribute::get(fn () => Str::limit($this->contenido, 90));
+        return Attribute::get(fn (?string $value): string =>
+            $value ?: Str::limit($this->contenido, 160)
+        );
     }
 
     protected function esNuevo(): Attribute
