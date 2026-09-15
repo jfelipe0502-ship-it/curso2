@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// app/Models/Categoria.php
 class Categoria extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['nombre'];
 
     public function posts()

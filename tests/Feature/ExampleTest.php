@@ -1,19 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+uses(RefreshDatabase::class);
 
-class ExampleTest extends TestCase
-{
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_redirects_to_login(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertRedirect('/login');
-    }
-}
+test('the application loads the homepage', function () {
+    $this->get('/')
+        ->assertOk();
+});

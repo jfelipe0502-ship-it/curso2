@@ -20,7 +20,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class EnviarAvisoPorCorreo
+class EnviarAvisoPorCorreo implements ShouldQueue
 {
     use Queueable;
 
@@ -28,6 +28,7 @@ class EnviarAvisoPorCorreo
 
     public function handle(): void
     {
+
         $usuarios = User::all();
 
         // Arranca la cuenta. Si el trabajo se reintenta, vuelve a empezar de cero.
