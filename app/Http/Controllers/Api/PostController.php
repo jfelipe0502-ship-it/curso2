@@ -12,9 +12,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Jobs\EnviarAvisoPorCorreo;
+use App\Models\Categoria;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -40,7 +42,10 @@ class PostController extends Controller
         $datos = $request->validate([
             'titulo' => ['required', 'max:120'],
             'contenido' => ['required'],
-            'categoria_id' => ['required', 'exists:categorias,id'],
+            'categoria_id' => [
+                'required',
+                Rule::exists('categorias', 'id')->whereIn('nombre', Categoria::nombresPermitidosParaAvisos()),
+            ],
         ]);
 
         $datos['user_id'] = $request->user()->id;

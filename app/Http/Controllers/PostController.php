@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -31,7 +32,7 @@ class PostController extends Controller
     public function create()
 {
     Gate::authorize('create', Post::class);
-    return view('avisos.crear', ['categorias' => Categoria::orderBy('nombre')->get()]);
+    return view('avisos.crear', ['categorias' => Categoria::permitidasParaAvisos()->orderBy('nombre')->get()]);
 }
 
 public function store(Request $request)
@@ -41,7 +42,10 @@ public function store(Request $request)
         'titulo' => ['required', 'max:120'],
         'contenido' => ['required'],
         'resumen' => ['nullable', 'max:160'],
-        'categoria_id' => ['required', 'exists:categorias,id'],
+        'categoria_id' => [
+            'required',
+            Rule::exists('categorias', 'id')->whereIn('nombre', Categoria::nombresPermitidosParaAvisos()),
+        ],
     ]);
 
     $datos['user_id'] = Auth::id();

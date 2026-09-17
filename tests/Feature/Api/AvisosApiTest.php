@@ -13,7 +13,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     Queue::fake();
 
-    $this->categoria = Categoria::factory()->create(['nombre' => 'Avisos generales']);
+    $this->categoria = Categoria::factory()->create(['nombre' => 'Aviso']);
     $this->editor = User::factory()->create(['rol' => 'editor']);
 });
 
@@ -41,7 +41,7 @@ describe('leer avisos, sin token', function () {
 
         $this->getJson('/api/avisos')
             ->assertJsonPath('data.0.titulo', 'Cambio de horario')
-            ->assertJsonPath('data.0.categoria.nombre', 'Avisos generales');
+            ->assertJsonPath('data.0.categoria.nombre', 'Aviso');
     });
 });
 
@@ -91,6 +91,20 @@ describe('escribir avisos', function () {
         $this->postJson('/api/avisos', ['contenido' => 'sin titulo'])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['titulo', 'categoria_id']);
+    });
+
+    test('una categoria distinta de las permitidas responde 422', function () {
+        $categoriaNoPermitida = Categoria::factory()->create(['nombre' => 'Avisos generales']);
+
+        Sanctum::actingAs($this->editor);
+
+        $this->postJson('/api/avisos', [
+            'titulo' => 'Categoria no permitida',
+            'contenido' => 'No debe guardarse.',
+            'categoria_id' => $categoriaNoPermitida->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['categoria_id']);
     });
 });
 

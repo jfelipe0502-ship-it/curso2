@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Post;
+use App\Models\Categoria;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -16,11 +18,21 @@ class FormularioAviso extends Component
     #[Validate('required')]
     public string $contenido = '';
 
-    #[Validate('required|exists:categorias,id')]
+    #[Validate('required')]
     public string $categoria_id = '';
 
     #[Validate('nullable|max:160')]
     public string $resumen = '';
+
+    protected function rules(): array
+    {
+        return [
+            'categoria_id' => [
+                'required',
+                Rule::exists('categorias', 'id')->whereIn('nombre', Categoria::nombresPermitidosParaAvisos()),
+            ],
+        ];
+    }
 
     public function guardar(): void
     {
@@ -38,7 +50,7 @@ class FormularioAviso extends Component
     public function render()
     {
         return view('livewire.formulario-aviso', [
-            'categorias' => \App\Models\Categoria::orderBy('nombre')->get(),
+            'categorias' => Categoria::permitidasParaAvisos()->orderBy('nombre')->get(),
         ]);
     }
 }
