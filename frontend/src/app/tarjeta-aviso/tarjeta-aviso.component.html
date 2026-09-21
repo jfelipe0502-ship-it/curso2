@@ -1,0 +1,7 @@
+<article class="tarjeta">
+	<span class="chip">{{ aviso.categoria?.nombre }}</span>
+	<h3>{{ aviso.titulo }}</h3>
+	<p>{{ aviso.contenido }}</p>
+	<small>{{ aviso.autor }} · {{ aviso.creado | date:'dd/MM/yyyy' }}</small>
+	<button *ngIf="puedeBorrar" class="peligro" (click)="borrar.emit(aviso)">Borrar</button>
+</article>

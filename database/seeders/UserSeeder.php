@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Usuarios de practica del blog. Con estos entras al sistema en clase.
  *
- *   admin@blog.test   / secreto123   (rol admin)
- *   editor@blog.test  / secreto123   (rol editor)
+ *   admin@blog.test       / secreto123   (rol admin)
+ *   editor@blog.test      / secreto123   (rol editor)
+ *   jfelipe0502@gmail.com / password     (rol admin)
  *
  * Es idempotente: puedes correrlo las veces que quieras.
  */
@@ -19,39 +20,29 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::firstOrNew(['email' => 'admin@blog.test']);
-        $admin->name = 'Admin del blog';
-        $admin->password = Hash::make('secreto123');
-        if (Schema::hasColumn('users', 'rol')) {
-            $admin->rol = 'admin';
-        }
-        $admin->save();
+        $emailsPermitidos = [
+            'admin@blog.test',
+            'editor@blog.test',
+            'jfelipe0502@gmail.com',
+        ];
 
-        $editor = User::firstOrNew(['email' => 'editor@blog.test']);
-        $editor->name = 'Editor de guardia';
-        $editor->password = Hash::make('secreto123');
-        if (Schema::hasColumn('users', 'rol')) {
-            $editor->rol = 'editor';
-        }
-        $editor->save();
+        User::whereNotIn('email', $emailsPermitidos)->delete();
 
-        User::updateOrCreate(
-            ['email' => 'admin@avisos.test'],
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@blog.test'],
             [
-                'name' => 'Administrador',
-                'password' => Hash::make('password'),
+                'name' => 'Admin del blog',
+                'password' => Hash::make('secreto123'),
                 'rol' => 'admin',
-                'email_verified_at' => now(),
             ],
         );
 
         User::updateOrCreate(
-            ['email' => 'usuario@avisos.test'],
+            ['email' => 'editor@blog.test'],
             [
-                'name' => 'Usuario',
-                'password' => Hash::make('password'),
-                'rol' => 'lector',
-                'email_verified_at' => now(),
+                'name' => 'Editor de guardia',
+                'password' => Hash::make('secreto123'),
+                'rol' => 'editor',
             ],
         );
 

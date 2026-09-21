@@ -1,0 +1,10 @@
+<p *ngIf="cargando" class="nota">Cargando aviso...</p>
+<p *ngIf="error" class="nota mal">{{ error }}</p>
+
+<article *ngIf="aviso" class="panel">
+	<span class="chip">{{ aviso.categoria?.nombre }}</span>
+	<h1>{{ aviso.titulo }}</h1>
+	<p>{{ aviso.contenido }}</p>
+	<small>{{ aviso.autor }} · {{ aviso.creado | date:'dd/MM/yyyy' }}</small>
+	<a *ngIf="sesion.sesion$ | async" class="boton" [routerLink]="['/avisos', aviso.id, 'editar']">Editar este aviso</a>
+</article>

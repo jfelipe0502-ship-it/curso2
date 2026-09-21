@@ -25,6 +25,7 @@ class PostResource extends JsonResource
             'resumen' => $this->resumen,
             'contenido' => $this->contenido,
             'publicado' => $this->publicado,
+            'autor_id' => $this->user_id,
             'destinatarios' => $this->destinatarios ?? 0,
             'notificados' => $this->notificados ?? 0,
 

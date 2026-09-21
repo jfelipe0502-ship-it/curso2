@@ -38,6 +38,7 @@ class TokenController extends Controller
             // plainTextToken es la UNICA vez que se ve completo: en la tabla
             // queda guardado su hash, igual que una contrasena.
             'token' => $usuario->createToken($datos['dispositivo'])->plainTextToken,
+            'id' => $usuario->id,
             'usuario' => $usuario->name,
             'rol' => $usuario->rol,
         ];

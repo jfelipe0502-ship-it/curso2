@@ -1,0 +1,27 @@
+<form #form="ngForm" class="panel" [hidden]="cargando" (ngSubmit)="guardar()">
+  <h2>Editar aviso</h2>
+
+  <div class="campo">
+    <label for="titulo-editar">Título</label>
+    <input id="titulo-editar" name="titulo" [(ngModel)]="aviso.titulo" required>
+    <span *ngIf="errores['titulo']" class="error">{{ errores['titulo'][0] }}</span>
+  </div>
+
+  <div class="campo">
+    <label for="contenido-editar">Contenido</label>
+    <textarea id="contenido-editar" name="contenido" [(ngModel)]="aviso.contenido" required></textarea>
+    <span *ngIf="errores['contenido']" class="error">{{ errores['contenido'][0] }}</span>
+  </div>
+
+  <div class="campo">
+    <label for="categoria-editar">Categoría (su número)</label>
+    <input id="categoria-editar" name="categoria_id" type="number" [(ngModel)]="aviso.categoria_id" required>
+    <span *ngIf="errores['categoria_id']" class="error">{{ errores['categoria_id'][0] }}</span>
+  </div>
+
+  <button type="submit" [disabled]="guardando">Guardar cambios</button>
+  <a class="cancelar" [routerLink]="['/avisos', id]">Cancelar</a>
+  <p *ngIf="mensaje" class="nota mal">{{ mensaje }}</p>
+</form>
+
+<p *ngIf="cargando" class="nota">Cargando aviso...</p>

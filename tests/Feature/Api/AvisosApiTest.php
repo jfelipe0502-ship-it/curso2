@@ -43,6 +43,24 @@ describe('leer avisos, sin token', function () {
             ->assertJsonPath('data.0.titulo', 'Cambio de horario')
             ->assertJsonPath('data.0.categoria.nombre', 'Aviso');
     });
+
+    test('filtra avisos publicados por titulo', function () {
+        Post::factory()->create([
+            'categoria_id' => $this->categoria->id,
+            'titulo' => 'Cambio de horario',
+            'publicado' => true,
+        ]);
+        Post::factory()->create([
+            'categoria_id' => $this->categoria->id,
+            'titulo' => 'Reunión general',
+            'publicado' => true,
+        ]);
+
+        $this->getJson('/api/avisos?q=horario')
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.titulo', 'Cambio de horario');
+    });
 });
 
 describe('escribir avisos', function () {

@@ -1,13 +1,15 @@
 <p *ngIf="cargando" class="nota">Cargando avisos...</p>
 <p *ngIf="error" class="nota mal">{{ error }}</p>
+<p *ngIf="mensaje" class="nota" [class.ok]="mensajeOk" [class.mal]="!mensajeOk">{{ mensaje }}</p>
+
+<input class="buscador" type="search" placeholder="Buscar por título" [formControl]="buscar">
 
 <div class="tarjetas">
-  <article *ngFor="let aviso of avisos" class="tarjeta">
-    <span class="chip">{{ aviso.categoria?.nombre }}</span>
-    <h3>{{ aviso.titulo }}</h3>
-    <p>{{ aviso.contenido }}</p>
-    <small>{{ aviso.autor }} · {{ aviso.creado | date:'dd/MM/yyyy' }}</small>
-  </article>
+  <app-tarjeta-aviso *ngFor="let aviso of avisos"
+    [aviso]="aviso"
+    [puedeBorrar]="puedeBorrar(aviso, sesion.sesion$ | async)"
+    (borrar)="borrar($event)">
+  </app-tarjeta-aviso>
 </div>
 
 <p *ngIf="!cargando && !error && avisos.length === 0" class="vacio">Tu API no tiene avisos publicados.</p>

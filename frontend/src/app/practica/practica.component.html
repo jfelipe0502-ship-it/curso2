@@ -1,0 +1,16 @@
+<section class="tarjeta">
+  <h3>Hola, {{ nombre }}</h3>
+  <p>Te tocan {{ turnos }} turnos: {{ turnos * 8 }} horas.</p>
+  <button (click)="sumar()">Un turno más</button>
+  <p *ngIf="turnos > 5" class="nota mal">Son demasiados turnos.</p>
+
+  <ul>
+    <li *ngFor="let pendiente of pendientes; let i = index">{{ i + 1 }}. {{ pendiente }}</li>
+  </ul>
+
+  <input [(ngModel)]="nuevo" placeholder="Nuevo pendiente">
+  <button (click)="agregar()" [disabled]="!nuevo.trim()">Agregar</button>
+
+  <p>{{ nombre | uppercase }} · {{ hoy | date:'dd/MM/yyyy' }}</p>
+  <p>Tu API tiene {{ total }} avisos publicados.</p>
+</section>

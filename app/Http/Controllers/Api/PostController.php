@@ -20,12 +20,16 @@ use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // paginate() en una API no pinta enlaces: agrega "links" y "meta" al JSON.
-        return PostResource::collection(
-            Post::publicados()->with(['categoria', 'user'])->latest()->paginate(10)
-        );
+        $avisos = Post::publicados()
+            ->with(['categoria', 'user'])
+            ->when($request->query('q'), fn ($consulta, $texto) => $consulta->where('titulo', 'like', "%{$texto}%"))
+            ->latest()
+            ->paginate(10);
+
+        return PostResource::collection($avisos);
     }
 
     public function show(Post $post)
