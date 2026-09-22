@@ -116,3 +116,11 @@ Si algo se atoró, escribe en qué paso y pega lo que te salió. Es mejor resolv
 | El paso 4 se queda callado un rato | Normal: está descargando. En el contenedor del curso tarda unos 15 segundos; con red lenta, un par de minutos. |
 | `Address already in use` en el paso 5 | Ya tienes algo en el 8001. Usa `runserver 0.0.0.0:8002` y ajusta el `curl`. |
 | `404` en el paso 5 | Estás pidiendo una ruta que todavía no existe. La que responde hoy es `http://localhost:8001/api-auth/login/` |
+
+---
+
+## Si quieres llegar con ventaja
+
+La lectura [`00-django-por-dentro.md`](00-django-por-dentro.md) es la versión escrita de la clase, y sus **seis primeras secciones están pensadas para leerlas antes**: lo justo de Python para leer Django, el entorno virtual a fondo, qué es cada archivo del proyecto, la diferencia entre proyecto y app, `settings.py` sección por sección y de dónde sale la configuración que cambia entre máquinas.
+
+No es obligatorio y no son más de veinte minutos. Si las lees, la clase deja de ser un desfile de archivos nuevos.
