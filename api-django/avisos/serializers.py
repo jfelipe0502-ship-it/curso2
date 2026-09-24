@@ -18,4 +18,4 @@ class AvisoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aviso
-        fields = ["id", "titulo", "contenido", "categoria", "categoria_id", "autor", "creado"]
+        fields = ["id", "titulo", "contenido", "categoria", "categoria_id", "autor", "autor_id", "creado"]

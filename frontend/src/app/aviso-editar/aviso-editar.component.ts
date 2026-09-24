@@ -59,8 +59,8 @@ export class AvisoEditarComponent implements OnInit {
         this.guardando = false;
         if (e.status === 403) {
           this.mensaje = '403 · ese aviso no es tuyo. Lo decidió tu PostPolicy, no el guard.';
-        } else if (e.status === 422) {
-          this.errores = e.error.errors;
+        } else if (e.status === 400) {
+          this.errores = e.error;
         } else {
           this.mensaje = `${e.status} · tu API no guardó el aviso`;
         }

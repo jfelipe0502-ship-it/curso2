@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
 
 export interface Sesion {
   token: string;
@@ -28,7 +28,15 @@ export class SesionService {
   }
 
   entrar(email: string, password: string): Observable<Sesion> {
-    return this.http.post<Sesion>('/api/token', { email, password, dispositivo: 'angular' }).pipe(
+    return this.http.post<{ token: string }>('/api/token', { username: email, password }).pipe(
+      switchMap(({ token }) => {
+        const provisional: Sesion = { token, id: 0, usuario: email, rol: '' };
+        sessionStorage.setItem(CLAVE, JSON.stringify(provisional));
+        this.sesionSubject.next(provisional);
+        return this.yo().pipe(
+          map(yo => ({ token, id: yo.id, usuario: yo.nombre, rol: yo.rol }))
+        );
+      }),
       tap(sesion => {
         sessionStorage.setItem(CLAVE, JSON.stringify(sesion));
         this.sesionSubject.next(sesion);

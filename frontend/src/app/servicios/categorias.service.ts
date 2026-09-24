@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { Categoria } from '../modelos/categoria';
 
@@ -12,6 +12,8 @@ export class CategoriasService {
   constructor(private http: HttpClient) { }
 
   listar(): Observable<Categoria[]> {
-    return this.http.get<Categoria[]>('/api/categorias');
+    return this.http.get<{ results: Categoria[] }>('/api/categorias/').pipe(
+      map(respuesta => respuesta.results)
+    );
   }
 }

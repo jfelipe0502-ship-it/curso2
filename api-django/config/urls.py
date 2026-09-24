@@ -3,10 +3,11 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
-from avisos.views import AvisoViewSet, yo
+from avisos.views import AvisoViewSet, CategoriaViewSet, yo
 
 router = DefaultRouter()
 router.register(r"avisos", AvisoViewSet)
+router.register(r"categorias", CategoriaViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (token && !request.context.get(SIN_TOKEN)) {
       request = request.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
+        setHeaders: { Authorization: `Token ${token}` }
       });
     }
 
