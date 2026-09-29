@@ -129,10 +129,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # La API: el equivalente del config/sanctum.php mas el paginate(10) del controlador.
+# Sin SessionAuthentication: si el navegador ya tiene una sesion de /admin activa,
+# DRF exige CSRF para POST y /api/token responde 403 aunque el token sea correcto.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
