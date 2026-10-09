@@ -8,3 +8,28 @@ construye_angular:
     - cd frontend
     - npm ci
     - npm run build -- --configuration production
+
+prueba_django:
+  stage: probar
+  image: python:3.12-slim
+  services:
+    - name: postgres:16-alpine
+      alias: db
+  variables:
+    POSTGRES_DB: avisos_test
+    POSTGRES_USER: prueba
+    POSTGRES_PASSWORD: esta_clave_es_de_mentira_y_solo_vive_en_el_pipeline
+    DJANGO_SECRET_KEY: clave_de_mentira_solo_para_el_pipeline
+    DJANGO_DEBUG: "False"
+    DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+    DJANGO_DB_NAME: avisos_test
+    DJANGO_DB_USER: prueba
+    DJANGO_DB_PASSWORD: esta_clave_es_de_mentira_y_solo_vive_en_el_pipeline
+    DJANGO_DB_HOST: db
+    DJANGO_DB_PORT: "5432"
+  before_script:
+    - pip install --no-cache-dir -r api-django/requirements.txt "psycopg[binary]==3.2.*"
+    - cd api-django
+  script:
+    - python manage.py migrate --noinput
+    - python manage.py test --noinput
