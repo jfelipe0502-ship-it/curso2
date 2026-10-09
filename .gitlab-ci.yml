@@ -1,0 +1,10 @@
+stages:
+  - probar
+
+construye_angular:
+  stage: probar
+  image: node:20-alpine
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build -- --configuration production
