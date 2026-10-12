@@ -1,0 +1,9 @@
+# Solo para tu maquina. Compose lo mezcla solo con compose.yaml.
+# El servidor NO lo lee: alla los puertos no los publica nadie.
+services:
+  laravel:
+    ports: ["${PUERTO_LARAVEL:-8081}:80"]
+  django:
+    ports: ["${PUERTO_DJANGO:-8082}:8000"]
+  angular:
+    ports: ["${PUERTO_ANGULAR:-8080}:80"]

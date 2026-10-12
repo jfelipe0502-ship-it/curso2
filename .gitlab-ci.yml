@@ -33,3 +33,31 @@ prueba_django:
   script:
     - python manage.py migrate --noinput
     - python manage.py test --noinput
+
+prueba_laravel:
+  stage: probar
+  image: php:8.3-cli
+  services:
+    - name: postgres:16-alpine
+      alias: db
+  variables:
+    POSTGRES_DB: avisos_test
+    POSTGRES_USER: prueba
+    POSTGRES_PASSWORD: esta_clave_es_de_mentira_y_solo_vive_en_el_pipeline
+    APP_ENV: testing
+    DB_CONNECTION: pgsql
+    DB_HOST: db
+    DB_PORT: "5432"
+    DB_DATABASE: avisos_test
+    DB_USERNAME: prueba
+    DB_PASSWORD: esta_clave_es_de_mentira_y_solo_vive_en_el_pipeline
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git unzip libpq-dev libzip-dev libicu-dev
+    - docker-php-ext-install pdo_pgsql zip intl
+    - curl -fsSL https://getcomposer.org/installer -o /tmp/composer-setup.php
+    - php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    - composer install --no-interaction --prefer-dist --no-progress
+    - cp .env.example .env && php artisan key:generate
+  script:
+    - php artisan migrate --force
+    - php artisan test
